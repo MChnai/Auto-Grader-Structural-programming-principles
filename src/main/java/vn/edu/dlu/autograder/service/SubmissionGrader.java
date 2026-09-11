@@ -24,16 +24,19 @@ public class SubmissionGrader {
     private final OutputChecker outputChecker;
     private final CppCodeAnalyzer cppCodeAnalyzer;
     private final ExecutorService threadPool;
+    private final boolean useDocker; // Bổ sung cờ nhận biết môi trường
 
     public SubmissionGrader(ZipExtractor zipExtractor,
                             CompilerEngine compilerEngine,
                             ExecutorEngine executorEngine,
-                            OutputChecker outputChecker) {
+                            OutputChecker outputChecker,
+                            boolean useDocker) {
         this.zipExtractor = zipExtractor;
         this.compilerEngine = compilerEngine;
         this.executorEngine = executorEngine;
         this.outputChecker = outputChecker;
         this.cppCodeAnalyzer = new CppCodeAnalyzer();
+        this.useDocker = useDocker;
         // Cấu hình Thread Pool chạy các testcase song song
         this.threadPool = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
     }
@@ -46,7 +49,8 @@ public class SubmissionGrader {
         this(new ZipExtractor(),  
              new CompilerEngine(), 
              new ExecutorEngine(useDocker), 
-             new OutputChecker());
+             new OutputChecker(),
+             useDocker);
     }
 
     public GradingReport grade(StudentSubmission submission,
@@ -116,7 +120,10 @@ public class SubmissionGrader {
                 if (tr.isPassed()) {
                     passedCount++;
                 }
-                totalExecutionTimeMs += tr.getExecutionTimeMs();
+                
+                // NẾU DÙNG DOCKER: Trừ bớt 150ms Overhead ảo hóa mỗi TestCase để tính Performance công bằng
+                long adjustedTime = useDocker ? Math.max(0, tr.getExecutionTimeMs() - 150) : tr.getExecutionTimeMs();
+                totalExecutionTimeMs += adjustedTime;
                 
                 // Bắt cờ Memory Leak từ kết quả thực thi Sandbox
                 if (tr.hasMemoryLeak()) {

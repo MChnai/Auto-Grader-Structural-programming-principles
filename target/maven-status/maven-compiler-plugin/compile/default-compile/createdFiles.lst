@@ -29,6 +29,7 @@ vn\edu\dlu\autograder\checker\OutputChecker$CheckResult.class
 vn\edu\dlu\autograder\report\SummaryReport.class
 vn\edu\dlu\autograder\config\AppConfig.class
 vn\edu\dlu\autograder\executor\CompilerEngine.class
+vn\edu\dlu\autograder\executor\DockerExecutor$2.class
 vn\edu\dlu\autograder\checker\OutputChecker.class
 vn\edu\dlu\autograder\model\GradingRubric.class
 vn\edu\dlu\autograder\ui\liApp.class
