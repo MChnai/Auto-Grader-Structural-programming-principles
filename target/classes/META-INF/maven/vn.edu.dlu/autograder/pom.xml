@@ -46,6 +46,16 @@
 	        <artifactId>slf4j-simple</artifactId>
 	        <version>1.7.36</version>
 	    </dependency>
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-web</artifactId>
+	        <version>3.2.0</version> <!-- Hoặc phiên bản Spring Boot bạn đang dùng -->
+	    </dependency>
+	    <dependency>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		    <version>2.3.0</version>
+		</dependency>
     </dependencies>
 
     <build>
