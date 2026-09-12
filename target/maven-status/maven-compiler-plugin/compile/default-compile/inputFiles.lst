@@ -7,10 +7,12 @@ G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\Main.ja
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\model\AnalysisResult.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\service\PlagiarismCheckerService.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\ui\liApp.java
+G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\config\GradingRubric.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\model\ExecutionResult.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\report\SummaryReport.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\config\OpenApiConfig.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\dto\PlagiarismRequestDTO.java
+G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\config\AppConfig.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\executor\CompilerEngine.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\model\TestCase.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\report\ExcelReportExporter.java
@@ -29,6 +31,7 @@ G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\service
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\controller\PlagiarismController.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\evaluator\GradingService.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\model\GradingRubric.java
+G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\analyzer\PlagiarismReportExporter.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\executor\LocalExecutor.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\model\GradingReport.java
 G:\STUDY\HKI_3Year\DACN\AutoGraderv2\src\main\java\vn\edu\dlu\autograder\analyzer\CppCodeAnalyzer.java
