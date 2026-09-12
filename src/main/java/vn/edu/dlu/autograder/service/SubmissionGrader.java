@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 public class SubmissionGrader {
 
@@ -183,44 +186,7 @@ public class SubmissionGrader {
             cleanUpTempDirectory(workDir);
         }
     }
-
-    // Helper: Xử lý 1 Testcase đơn lẻ
-    private TestCaseResult runSingleTestCase(Path exePath, TestCase tc) {
-        ExecutionResult execResult = executorEngine.execute(exePath, tc);
-
-        TestCaseResult.Status status;
-        String diffMsg;
-
-        if (execResult.isTimedOut()) {
-            status = TestCaseResult.Status.TIME_LIMIT_EXCEEDED;
-            diffMsg = execResult.getStderr();
-        } else if (execResult.getExitCode() != 0) {
-            status = TestCaseResult.Status.RUNTIME_ERROR;
-            diffMsg = "Runtime Error (Exit Code " + execResult.getExitCode() + "):\n" + execResult.getStderr();
-        } else {
-            OutputChecker.CheckResult checkResult = outputChecker.check(
-                    execResult.getStdout(),
-                    tc.getExpectedOutput(),
-                    OutputChecker.MatchMode.IGNORE_TRAILING_WHITESPACE
-            );
-
-            if (checkResult.isMatched()) {
-                status = TestCaseResult.Status.ACCEPTED;
-                diffMsg = "Correct Answer";
-            } else {
-                status = TestCaseResult.Status.WRONG_ANSWER;
-                diffMsg = checkResult.getDiffMessage();
-            }
-        }
-
-        TestCaseResult result = new TestCaseResult(tc, status, execResult.getStdout(), diffMsg, execResult.getExecutionTimeMs());
-        
-        // Cập nhật thông số Memory Leak từ ExecutionResult sang TestCaseResult nếu có
-        result.setHasMemoryLeak(execResult.hasMemoryLeak());
-        
-        return result;
-    }
-
+    
     private Path findMainCppSourceFile(Path dir) {
         if (dir == null || !Files.exists(dir)) return null;
         try (Stream<Path> stream = Files.walk(dir)) {
@@ -248,5 +214,61 @@ public class SubmissionGrader {
                       });
             } catch (IOException ignored) {}
         }
+    }
+ // Helper: Xử lý 1 Testcase đơn lẻ có cơ chế Timeout
+    private TestCaseResult runSingleTestCase(Path exePath, TestCase tc) {
+        long timeLimitSeconds = 2; // Giới hạn thời gian 2 giây cho mỗi testcase
+
+        // 1. Thực thi tiến trình với NativeProcessExecutor (Có cơ chế Timeout)
+        ExecutionResult execResult = vn.edu.dlu.autograder.executor.NativeProcessExecutor.runWithTimeout(
+                exePath, 
+                tc.getInput(), 
+                timeLimitSeconds
+        );
+
+        TestCaseResult.Status status;
+        String diffMsg;
+
+        // 2. Phân loại kết quả thực thi
+        if (execResult.isTimedOut()) {
+            // Trường hợp 1: Chạy quá thời gian (Lặp vô hạn / TLE)
+            status = TestCaseResult.Status.TIME_LIMIT_EXCEEDED;
+            diffMsg = "Time Limit Exceeded (" + timeLimitSeconds + "s):\n" + execResult.getStderr();
+
+        } else if (execResult.getExitCode() != 0) {
+            // Trường hợp 2: Lỗi Runtime Error (Crash / Segfault)
+            status = TestCaseResult.Status.RUNTIME_ERROR;
+            diffMsg = "Runtime Error (Exit Code " + execResult.getExitCode() + "):\n" + execResult.getStderr();
+
+        } else {
+            // Trường hợp 3: Chạy thành công -> Kiểm tra Output trùng khớp
+            OutputChecker.CheckResult checkResult = outputChecker.check(
+                    execResult.getStdout(),
+                    tc.getExpectedOutput(),
+                    OutputChecker.MatchMode.IGNORE_TRAILING_WHITESPACE
+            );
+
+            if (checkResult.isMatched()) {
+                status = TestCaseResult.Status.ACCEPTED;
+                diffMsg = "Correct Answer";
+            } else {
+                status = TestCaseResult.Status.WRONG_ANSWER;
+                diffMsg = checkResult.getDiffMessage();
+            }
+        }
+
+        // 3. Khởi tạo TestCaseResult chuẩn theo Constructor của dự án
+        TestCaseResult result = new TestCaseResult(
+                tc, 
+                status, 
+                execResult.getStdout(), 
+                diffMsg, 
+                execResult.getExecutionTimeMs()
+        );
+
+        // Cập nhật thông số Memory Leak từ ExecutionResult nếu có
+        result.setHasMemoryLeak(execResult.hasMemoryLeak());
+
+        return result;
     }
 }
