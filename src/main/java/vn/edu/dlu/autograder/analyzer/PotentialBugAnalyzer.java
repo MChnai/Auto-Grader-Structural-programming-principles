@@ -7,13 +7,18 @@ import java.util.regex.Pattern;
 public class PotentialBugAnalyzer {
 
     public void analyze(String normalizedCode, AnalysisResult result) {
+        if (normalizedCode == null || normalizedCode.isBlank()) {
+            return;
+        }
+
         checkNullPointerDereference(normalizedCode, result);
         checkMissingReturnInNonVoid(normalizedCode, result);
         checkOutOfBoundsArrayAccess(normalizedCode, result);
     }
 
     private void checkNullPointerDereference(String code, AnalysisResult result) {
-        Pattern uninitPtrPattern = Pattern.compile("\\b[a-zA-Z_][a-zA-Z0-9_]*\\s*\\*\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*;\\s*\\*\\1");
+        // Tối ưu Regex: Cho phép khoảng trắng/xuống dòng giữa khai báo con trỏ chưa khởi tạo và thao tác dereference *p
+        Pattern uninitPtrPattern = Pattern.compile("\\b[a-zA-Z_][a-zA-Z0-9_]*\\s*\\*\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*;[\\s\\S]*?\\*\\1\\b");
         if (uninitPtrPattern.matcher(code).find()) {
             result.addViolation("Lỗi con trỏ: Sử dụng con trỏ chưa được khởi tạo (Uninitialized Pointer Dereference).");
         }
