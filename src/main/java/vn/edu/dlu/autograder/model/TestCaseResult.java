@@ -7,7 +7,7 @@ public class TestCaseResult {
         WRONG_ANSWER,           // Sai đáp án (WA)
         TIME_LIMIT_EXCEEDED,    // Quá thời gian (TLE)
         RUNTIME_ERROR,          // Lỗi khi chạy (RTE)
-        COMPILE_ERROR           // Lỗi biên dịch (CE)
+        COMPILE_ERROR,           // Lỗi biên dịch (CE)
     }
 
     private final TestCase testCase;
