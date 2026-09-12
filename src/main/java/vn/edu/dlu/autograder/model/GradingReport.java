@@ -11,13 +11,11 @@ public class GradingReport {
     private final List<TestCaseResult> testCaseResults;
     private final double finalScore;
     private final String summary;
-
-    // Các thuộc tính Clean Code & Performance nâng cao
     private double cleanCodeScore = 100.0;
     private List<String> styleWarnings = new ArrayList<>();
     private long maxExecutionTimeMs = 0;
     private long maxMemoryUsedKb = 0;
-    private double plagiarismSimilarity = 0.0; // Dành cho Giai đoạn 3 (Plagiarism)
+    private double plagiarismSimilarity = 0.0; 
 
     public GradingReport(StudentSubmission submission, 
                          boolean compileSuccess, 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Báo Cáo Kiểm Tra Đạo Văn</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; margin: 30px; color: #333; }
+    .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { color: #2c3e50; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+    .info { margin-bottom: 20px; color: #6c757d; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #dee2e6; }
+    th { background-color: #007bff; color: white; text-transform: uppercase; font-size: 13px; }
+    tr:hover { background-color: #f1f1f1; }
+    .badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; color: white; display: inline-block; }
+    .bg-danger { background-color: #dc3545; }
+    .bg-warning { background-color: #ffc107; color: #212529; }
+    .bg-success { background-color: #28a745; }
+    .no-data { text-align: center; padding: 20px; color: #28a745; font-size: 16px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BÁO CÁO KIỂM TRA ĐẠO VĂN</h1>
+    <div class="info">
+      <p><strong>Thời gian xuất báo cáo:</strong> 13/09/2026 00:59:00</p>
+      <p><strong>Ngưỡng cảnh báo:</strong> 10.0%</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Sinh viên A</th>
+          <th>Sinh viên B</th>
+          <th>Mức độ tương đồng</th>
+          <th>Đánh giá</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>student1_rename</strong></td>
+          <td><strong>original</strong></td>
+          <td><span class="badge bg-warning">52.50%</span></td>
+          <td>Cảnh báo</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>original</strong></td>
+          <td><strong>kimYen_1</strong></td>
+          <td><span class="badge bg-success">5.77%</span></td>
+          <td>An toàn</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>student1_rename</strong></td>
+          <td><strong>kimYen_1</strong></td>
+          <td><span class="badge bg-success">3.88%</span></td>
+          <td>An toàn</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

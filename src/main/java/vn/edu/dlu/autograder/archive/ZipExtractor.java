@@ -1,14 +1,16 @@
 package vn.edu.dlu.autograder.archive;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.stream.Stream;
-import java.util.Locale;
 
 public class ZipExtractor {
 
@@ -29,9 +31,19 @@ public class ZipExtractor {
     }
 
     /**
+     * BỔ SUNG: Hàm extractZip đơn giản để giải nén trực tiếp vào thư mục chỉ định (void)
+     */
+    public static void extractZip(Path zipFilePath, Path destinationDir) throws IOException {
+        ExtractResult result = extract(zipFilePath, destinationDir);
+        if (!result.isSuccess()) {
+            throw new IOException(result.getMessage());
+        }
+    }
+
+    /**
      * Giải nén file .zip vào destinationDir và tự động định vị thư mục chứa code .cpp
      */
-    public ExtractResult extract(Path zipFilePath, Path destinationDir) {
+    public static ExtractResult extract(Path zipFilePath, Path destinationDir) {
         if (zipFilePath == null || !Files.exists(zipFilePath)) {
             return new ExtractResult(false, "Lỗi: File .zip không tồn tại!", null);
         }
@@ -72,7 +84,8 @@ public class ZipExtractor {
             // 3. Tự động định vị thư mục thực sự chứa các file .cpp (Xử lý cấu trúc folder lồng nhau)
             Path actualSourceDir = findCppSourceDirectory(destinationDir);
             if (actualSourceDir == null) {
-                return new ExtractResult(false, "Lỗi: Không tìm thấy bất kỳ file .cpp nào trong file .zip đã giải nén!", null);
+                // Nếu không tìm thấy .cpp, trả về chính thư mục đích để gom file chung
+                return new ExtractResult(true, "Giải nén thành công!", destinationDir);
             }
 
             return new ExtractResult(true, "Giải nén thành công!", actualSourceDir);
@@ -87,7 +100,7 @@ public class ZipExtractor {
     /**
      * Quét thư mục để tìm thư mục nông nhất chứa ít nhất 1 file .cpp
      */
-    private Path findCppSourceDirectory(Path rootDir) throws IOException {
+    private static Path findCppSourceDirectory(Path rootDir) throws IOException {
         try (Stream<Path> stream = Files.walk(rootDir)) {
             return stream.filter(Files::isRegularFile)
                     .filter(p -> p.getFileName() != null && 
@@ -95,6 +108,22 @@ public class ZipExtractor {
                     .map(Path::getParent)
                     .findFirst()
                     .orElse(null);
+        }
+    }
+
+    /**
+     * BỔ SUNG HOÀN CHỈNH: Hàm dọn dẹp xóa sạch toàn bộ thư mục tạm và file con bên trong
+     */
+    public static void cleanUpDirectory(Path directoryPath) {
+        if (directoryPath == null || !Files.exists(directoryPath)) {
+            return;
+        }
+        try (Stream<Path> walk = Files.walk(directoryPath)) {
+            walk.sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
+        } catch (IOException e) {
+            System.err.println("[Cảnh báo] Không thể xóa triệt để thư mục tạm: " + directoryPath);
         }
     }
 }
