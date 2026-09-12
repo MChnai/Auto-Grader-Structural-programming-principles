@@ -1,2 +1,15 @@
+<<<<<<< HEAD
 
 target/
+=======
+# Maven build directory
+target/
+
+# IDE files
+.idea/
+.settings/
+.classpath
+.project
+*.iml
+*.log
+>>>>>>> feature/rest-api-controllers

@@ -24,6 +24,10 @@ public class GradingRubric {
     public GradingRubric() {
         this(10.0, 1.0, 0.0, 200.0);
     }
+    
+    public GradingRubric(double maxScore, double benchmarkTimeMs) {
+        this(maxScore, 0.8, 0.2, benchmarkTimeMs); // Mặc định 80% testcase, 20% style
+    }
 
     public double getMaxScore() { return maxScore; }
     public double getTestCaseWeightRatio() { return testCaseWeightRatio; }
