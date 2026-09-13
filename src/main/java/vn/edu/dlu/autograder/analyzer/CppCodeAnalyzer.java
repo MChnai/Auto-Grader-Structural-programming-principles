@@ -99,7 +99,7 @@ public class CppCodeAnalyzer {
 
     private void scanPackagesFromDirectory(Path rootDir, AnalysisResult result) {
         if (rootDir == null || !Files.exists(rootDir)) return;
-
+ 
         try (Stream<Path> stream = Files.walk(rootDir)) {
             stream.filter(Files::isDirectory)
                   .filter(p -> !p.equals(rootDir))
