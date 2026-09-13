@@ -6,15 +6,21 @@ import java.util.List;
 public class AnalysisResult {
     private boolean valid;
     private List<String> violations;
-    private List<String> warnings; // Thêm cảnh báo Clean Code
+    private List<String> warnings; 
     private int loopCount;
     private int functionCount;
-
-    // Các thuộc tính bổ sung cho phân tích nâng cao
     private double cleanCodeScore = 100.0;
     private boolean recursive = false;
     private boolean structDefined = false;
     private int cyclomaticComplexity = 1;
+    private int namespaceCount = 0;
+    private List<String> detectedPackages = new ArrayList<>();
+
+    public int getNamespaceCount() { return namespaceCount; }
+    public void setNamespaceCount(int namespaceCount) { this.namespaceCount = namespaceCount; }
+
+    public List<String> getDetectedPackages() { return detectedPackages; }
+    public void addDetectedPackage(String packageName) { this.detectedPackages.add(packageName); }
 
     public AnalysisResult() {
         this.valid = true;
@@ -32,6 +38,17 @@ public class AnalysisResult {
     public void addWarning(String message, double penalty) {
         this.warnings.add(message);
         this.cleanCodeScore = Math.max(0.0, this.cleanCodeScore - penalty);
+    }
+    public void evaluateArchitectureScore() {
+        if (namespaceCount > 0 || !detectedPackages.isEmpty()) {
+            this.warnings.add("Cộng điểm kiến trúc: Bài nộp có tổ chức Package/Namespace rõ ràng (+5 điểm Clean Code).");
+            this.cleanCodeScore = Math.min(100.0, this.cleanCodeScore + 5.0);
+        }
+
+        if (functionCount > 5 && namespaceCount == 0 && detectedPackages.isEmpty()) {
+            this.warnings.add("Cảnh báo kiến trúc: Bài nộp có trên 5 hàm nhưng không chia Namespace/Package (-5 điểm Clean Code).");
+            this.cleanCodeScore = Math.max(0.0, this.cleanCodeScore - 5.0);
+        }
     }
 
     public boolean isValid() { return valid; }

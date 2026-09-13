@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class CppCodeAnalyzer {
 
@@ -39,18 +40,21 @@ public class CppCodeAnalyzer {
             checkBannedHeaders(normalizedCode, result);
             checkBannedFunctions(normalizedCode, result);
 
-            // 2. Cập nhật các chỉ số cơ bản (loopCount, functionCount) vào AnalysisResult của bạn
+            // 2. Cập nhật các chỉ số cơ bản (loopCount, functionCount)
             result.setLoopCount(countMatches(normalizedCode, "\\b(for|while|do)\\b"));
             result.setFunctionCount(countMatches(normalizedCode, "\\b(int|void|long|double|float|bool|string)\\s+[a-zA-Z_][a-zA-Z0-9_]*\\s*\\("));
 
-            // 3. Phân tích Cấu trúc & Đệ quy & Space Complexity
+            // 3. THỐNG KÊ NAMESPACE & PACKAGE (Bổ sung thu thập dữ liệu trước)
+            result.setNamespaceCount(countMatches(normalizedCode, "\\bnamespace\\s+[a-zA-Z_][a-zA-Z0-9_]*"));
+            scanPackagesFromDirectory(sourceFilePath.getParent(), result);
+
+            // 4. Phân tích Cấu trúc, Style & Potential Bugs
             structureAnalyzer.analyze(normalizedCode, result, requireRecursion, requireStruct);
-
-            // 4. Phân tích Clean Code & Cyclomatic Complexity
             styleAnalyzer.analyze(rawCode, normalizedCode, result);
-
-            // 5. Bắt lỗi Runtime Potential Bugs
             bugAnalyzer.analyze(normalizedCode, result);
+            
+            // 5. ĐÁNH GIÁ ĐIỂM KIẾN TRÚC (Gọi sau khi đã có đủ dữ liệu ở Bước 3)
+            result.evaluateArchitectureScore();
 
         } catch (IOException e) {
             result.addViolation("Không thể đọc file mã nguồn: " + e.getMessage());
@@ -91,5 +95,15 @@ public class CppCodeAnalyzer {
             count++;
         }
         return count;
+    }
+
+    private void scanPackagesFromDirectory(Path rootDir, AnalysisResult result) {
+        if (rootDir == null || !Files.exists(rootDir)) return;
+
+        try (Stream<Path> stream = Files.walk(rootDir)) {
+            stream.filter(Files::isDirectory)
+                  .filter(p -> !p.equals(rootDir))
+                  .forEach(p -> result.addDetectedPackage(rootDir.relativize(p).toString()));
+        } catch (IOException ignored) {}
     }
 }
