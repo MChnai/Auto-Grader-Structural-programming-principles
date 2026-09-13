@@ -6,11 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.edu.dlu.autograder.model.*;
 import vn.edu.dlu.autograder.service.SubmissionGrader;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/grader")
@@ -22,31 +22,67 @@ public class GraderController {
     public ResponseEntity<?> gradeSubmission(
             @RequestParam("file") MultipartFile file,
             @RequestParam("studentId") String studentId,
-            @RequestParam("studentName") String studentName) {
+            @RequestParam("studentName") String studentName,
+            @RequestParam(value = "inFiles", required = false) List<MultipartFile> inFiles,
+            @RequestParam(value = "outFiles", required = false) List<MultipartFile> outFiles) {
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File ZIP bài nộp không được rỗng!");
         }
 
         try {
-            // 1. Lưu file ZIP tạm
+            // 1. Ghép các cặp file .in và .out thành List<TestCase>
+            List<TestCase> testCases = parseTestCasesFromFiles(inFiles, outFiles);
+
+            // 2. Lưu file ZIP tạm
             Path tempZip = Files.createTempFile("sub_", "_" + file.getOriginalFilename());
             file.transferTo(tempZip.toFile());
 
             StudentSubmission submission = new StudentSubmission(studentId, studentName, tempZip);
-            GradingRubric rubric = new GradingRubric(10.0, 200.0); // 10 điểm, benchmark 200ms
+            GradingRubric rubric = new GradingRubric(10.0, 200.0);
             Path tempWorkDir = Files.createTempDirectory("grader_work_");
 
-            // 2. Gọi Service chấm điểm (Sử dụng danh sách testcase mặc định hoặc truyền từ ngoài vào)
-            GradingReport report = submissionGrader.grade(submission, Collections.emptyList(), rubric, tempWorkDir);
+            // 3. Gọi Service chấm điểm với testCases vừa ghép
+            GradingReport report = submissionGrader.grade(submission, testCases, rubric, tempWorkDir);
 
-            // 3. Dọn dẹp file ZIP tạm
+            // 4. Dọn dẹp file ZIP tạm
             Files.deleteIfExists(tempZip);
 
             return ResponseEntity.ok(report);
 
         } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Lỗi xử lý file bài nộp: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Lỗi xử lý file: " + e.getMessage());
         }
+    }
+
+    // Helper: Ghép file .in và .out có cùng tên (VD: test1.in ghép với test1.out)
+    private List<TestCase> parseTestCasesFromFiles(List<MultipartFile> inFiles, List<MultipartFile> outFiles) throws IOException {
+        if (inFiles == null || inFiles.isEmpty()) return Collections.emptyList();
+
+        Map<String, String> outputsMap = new HashMap<>();
+        if (outFiles != null) {
+            for (MultipartFile outFile : outFiles) {
+                String baseName = getBaseName(outFile.getOriginalFilename());
+                String content = new String(outFile.getBytes(), StandardCharsets.UTF_8);
+                outputsMap.put(baseName, content);
+            }
+        }
+
+        List<TestCase> testCases = new ArrayList<>();
+        for (MultipartFile inFile : inFiles) {
+            String baseName = getBaseName(inFile.getOriginalFilename());
+            String inputContent = new String(inFile.getBytes(), StandardCharsets.UTF_8);
+            String expectedOutput = outputsMap.getOrDefault(baseName, "");
+
+            testCases.add(new TestCase(baseName, inputContent, expectedOutput, 5));
+        }
+
+        return testCases;
+    }
+
+    private String getBaseName(String fileName) {
+        if (fileName == null) return "";
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
     }
 }
