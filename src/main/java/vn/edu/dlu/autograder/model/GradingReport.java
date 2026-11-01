@@ -14,7 +14,6 @@ public class GradingReport {
     private double cleanCodeScore = 100.0;
     private List<String> styleWarnings = new ArrayList<>();
     private long maxExecutionTimeMs = 0;
-    private long maxMemoryUsedKb = 0;
     private double plagiarismSimilarity = 0.0; 
 
     public GradingReport(StudentSubmission submission, 
