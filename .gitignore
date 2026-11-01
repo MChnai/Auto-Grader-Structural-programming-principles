@@ -1,11 +1,43 @@
-# Maven build directory
-target/
+# Maven / build outputs (do not commit generated binaries)
+**/target/
+dependency-reduced-pom.xml
+*.class
+*.jar
+*.war
+*.ear
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
 
-# IDE files
+# IDE / OS-specific state
 .idea/
+.vscode/
 .settings/
 .classpath
 .project
 *.iml
+*.launch
+*.code-workspace
+*.vcxproj.user
+.DS_Store
+Thumbs.db
+
+# Local logs, scratch files and secrets
 *.log
->>>>>>> feature/rest-api-controllers
+*.tmp
+*.bak
+*.swp
+*.swo
+.env
+.env.*
+!.env.example
+
+# Results produced by later research runs (source fixtures stay tracked)
+workspace/
+experiments/results/
+experiments/runs/
+
+# Do NOT ignore *.zip or *.out: test_data contains legitimate test fixtures.
