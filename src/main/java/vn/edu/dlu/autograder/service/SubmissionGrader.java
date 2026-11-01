@@ -15,11 +15,15 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 public class SubmissionGrader {
 
     private final ZipExtractor zipExtractor;
     private final CompilerEngine compilerEngine;
+    private final ExecutorEngine executorEngine;
     private final OutputChecker outputChecker;
     private final CppCodeAnalyzer cppCodeAnalyzer;
     private final ExecutorService threadPool;
@@ -32,6 +36,7 @@ public class SubmissionGrader {
                             boolean useDocker) {
         this.zipExtractor = zipExtractor;
         this.compilerEngine = compilerEngine;
+        this.executorEngine = executorEngine;
         this.outputChecker = outputChecker;
         this.cppCodeAnalyzer = new CppCodeAnalyzer();
         this.useDocker = useDocker;

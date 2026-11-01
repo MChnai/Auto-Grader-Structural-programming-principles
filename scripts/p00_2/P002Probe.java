@@ -65,18 +65,21 @@ public final class P002Probe {
             case "native_timeout" -> "int main(){for(;;){} }\n";
             case "native_stdout_big" -> "#include <iostream>\nint main(){for(int i=0;i<600000;i++)std::cout<<'A';}\n";
             case "native_stderr_big" -> "#include <iostream>\nint main(){for(int i=0;i<600000;i++)std::cerr<<'B';}\n";
-            case "native_input_big" -> "#include <iostream>\nint main(){std::cout<<1;}\n";
+            case "native_input_big" -> "#include <iostream>\nint main(){std::cin.sync_with_stdio(false); long long count=0;char c;while(std::cin.get(c))++count;std::cout<<count;}\n";
+            case "native_input_early_exit" -> "#include <iostream>\nint main(){std::cout<<1;}\n";
             case "native_empty_input_eof" -> "#include <iostream>\nint main(){char c;while(std::cin.get(c)){} std::cout<<'E';}\n";
             default -> throw new IllegalArgumentException(which);
         };
         file("src/main.cpp",code);
         CompilerEngine.CompileResult c = new CompilerEngine().compile(in,out);
         require(c.isSuccess(),"fixture compilation failed: "+c.getCompilerMessage());
-        String input=switch(which){case "native_normal" -> "10 20\n";case "native_input_big" -> "x".repeat(2_000_000);default -> "";};
+        String input=switch(which){case "native_normal" -> "10 20\n";case "native_input_big", "native_input_early_exit" -> "x".repeat(2_000_000);default -> "";};
         ExecutionResult r=NativeProcessExecutor.runWithTimeout(c.getExecutablePath(),input,1);
         if (which.equals("native_timeout")) require(r.isTimedOut(),"timeout not detected");
         else { require(!r.isTimedOut(),"unexpected timeout: "+r.getStderr()); require(r.getExitCode()==0,"exit="+r.getExitCode()+" stderr="+r.getStderr()); }
-        if (which.equals("native_normal")) require(r.getStdout().equals("30\n"),"wrong stdout: "+r.getStdout());
+        if (which.equals("native_normal")) require(r.getStdout().replace("\r\n", "\n").equals("30\n"), "wrong stdout (escaped): " + r.getStdout().replace("\r", "\\r").replace("\n", "\\n"));
+        if (which.equals("native_input_big")) require(r.getStdout().equals("2000000"), "wrong input byte count: " + r.getStdout());
+        if (which.equals("native_input_early_exit")) require(r.getStdout().equals("1"), "unexpected early exit result: " + r.getStdout());
         if (which.equals("native_stdout_big")) require(r.getStdout().length()==600000,"truncated stdout="+r.getStdout().length());
         if (which.equals("native_stderr_big")) require(r.getStderr().length()==600000,"truncated stderr="+r.getStderr().length());
         if (which.equals("native_empty_input_eof")) require(r.getStdout().equals("E"),"failed to close stdin");

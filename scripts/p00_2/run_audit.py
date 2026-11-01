@@ -19,7 +19,7 @@ PROBE = Path(__file__).with_name('P002Probe.java')
 SCENARIOS = {
     'ZipExtractor': ['zip_valid','zip_nested','zip_slip','zip_large','zip_no_cpp'],
     'CompilerEngine': ['compile_single','compile_multi','compile_error','compile_missing','compile_stderr_flood','compile_timeout'],
-    'NativeProcessExecutor': ['native_normal','native_timeout','native_stdout_big','native_stderr_big','native_input_big','native_empty_input_eof'],
+    'NativeProcessExecutor': ['native_normal','native_timeout','native_stdout_big','native_stderr_big','native_input_big','native_input_early_exit','native_empty_input_eof'],
     'CppCodeAnalyzer': ['analyzer_simple','analyzer_comments','analyzer_strings','analyzer_multifile','analyzer_complex_declarators'],
     'SubmissionGrader': ['grade_correct','grade_wrong','grade_compilation','grade_runtime','grade_tle','grade_rubric'],
     'OutputChecker': ['output_exact','output_exact_spaces','output_trim','output_internal_spaces','output_float','output_wrong','output_cr_only'],
@@ -30,9 +30,11 @@ EXPECTED_LIMITATIONS = {
  'zip_large': 'No upper bound on uncompressed archive size/entry count.',
  'zip_no_cpp': 'Extractor intentionally returns destination directory even when no .cpp is found (compiler rejects later).',
  'compile_stderr_flood': 'Compiler stderr is drained before waitFor(timeout); unbounded logs or open stderr can block.',
+ 'compile_timeout': 'Compiler timeout begins only after the entire stderr stream has closed; delayed compiler completion can evade timeout.',
  'native_stdout_big': 'Native executor waits before reading stdout; child may block on full pipe.',
  'native_stderr_big': 'Native executor waits before reading stderr; child may block on full pipe.',
- 'native_input_big': 'Native executor writes stdin before timeout; child may block/exit, causing failure.',
+ 'native_input_big': 'Verify delivery of a 2 MB stdin payload to a consumer before diagnosing pipe behavior.',
+ 'native_input_early_exit': 'Child exits before consuming large stdin; writer may get broken pipe and discard valid exit evidence.',
  'native_empty_input_eof': 'Empty stdin is not closed; programs reading to EOF can hang.',
  'analyzer_multifile': 'Analyzer processes only the specified file, not the whole multi-source project.',
  'analyzer_complex_declarators': 'Regex misses C++ trailing return type function declarations.',
@@ -64,6 +66,29 @@ def run(cmd, timeout=12, cwd=None, env=None):
         out, err = process.communicate(timeout=5)
         return {'exit_code': None, 'stdout': out[-1600:], 'stderr': err[-1600:],
                 'seconds': round(time.monotonic()-start, 3), 'watchdog': True}
+
+
+
+def build_fake_compiler(real_gxx, shim, scenario):
+    """Compile a harmless g++ replacement so timeout probes also run on native Windows.
+
+    The replacement only simulates a stalled compiler; it never compiles user files.
+    The real g++ is resolved before PATH is modified to avoid recursive compilation.
+    """
+    output = shim / ('g++.exe' if os.name == 'nt' else 'g++')
+    source = shim / 'fake_compiler.cpp'
+    flood = scenario == 'compile_stderr_flood'
+    source.write_text(
+        '#include <chrono>\n#include <iostream>\n#include <string>\n#include <thread>\n'
+        'int main(){\n' +
+        ("  std::cerr << std::string(500000, 'E'); std::cerr.flush();\n" if flood else '') +
+        f'  std::this_thread::sleep_for(std::chrono::seconds({36 if flood else 32}));\n'
+        '  return 0;\n}\n', encoding='utf-8')
+    build = run([real_gxx, '-std=c++17', str(source), '-o', str(output)], timeout=25)
+    if build['exit_code'] != 0 or build['watchdog']:
+        return None, 'Unable to create controlled compiler simulator: ' + build['stderr'][:350]
+    if os.name != 'nt': output.chmod(0o755)
+    return output, ''
 
 
 def notes(s):
@@ -117,7 +142,7 @@ def markdown(report):
         '', '## Limitations', '',
         '- These probes execute only synthetic, benign C++ fixtures. Baseline native execution is NOT secure for untrusted submissions.',
         '- Runtime JAR is a separate prebuilt artifact; this audit uses it for dependencies, not as proof of Maven package correctness.',
-        '- Cross-platform results may differ; run again on the target Windows/WSL2 development environment.',
+        '- Cross-platform results may differ; the normal-execution fixture now accepts CRLF. Fake compilers are built as native executables for the host platform; Windows behavior requires a Windows rerun.',
         '- Gradle/Maven dependency vulnerability audit, Docker isolation test, complete JUnit suite and GitHub CI are not covered by this standalone runner.',
         '- This P00.2 audit does not modify production behavior; confirmed defects remain as subsequent work items.',
         '',
@@ -130,6 +155,8 @@ def main():
     ap.add_argument('--runtime-jar', type=Path, required=True)
     ap.add_argument('--output-dir', type=Path, default=Path('p00-2-results'))
     ap.add_argument('--skip-slow', action='store_true')
+    ap.add_argument('--case', action='append', choices=sorted({c for cases in SCENARIOS.values() for c in cases}),
+                    help='Run one selected probe; may be repeated to choose multiple probes')
     args=ap.parse_args()
     jar=args.runtime_jar.resolve(); dest=args.output_dir.resolve(); dest.mkdir(parents=True,exist_ok=True)
     if not jar.is_file(): ap.error(f'Runtime JAR unavailable: {jar}')
@@ -150,6 +177,7 @@ def main():
         cp=os.pathsep.join((str(cls),str(jar)))
         for comp, scenarios in SCENARIOS.items():
             for scenario in scenarios:
+                if args.case and scenario not in args.case: continue
                 if args.skip_slow and scenario=='compile_timeout':
                     outcome={'case':scenario,'component':comp,'status':'BLOCKED','detail':'Skipped by --skip-slow'}
                     results.append(outcome); print(f'BLOCKED  {scenario}'); continue
@@ -157,15 +185,17 @@ def main():
                 cmd=['java','-cp',cp, 'P002Probe',scenario,str(path)]
                 env=os.environ.copy(); timeout=14
                 if scenario in ('compile_timeout','compile_stderr_flood'):
-                    if os.name=='nt':
-                        outcome={'case':scenario,'component':comp,'status':'BLOCKED','detail':'Fake g++ wrapper not supported by Windows probe; run in Linux/WSL2'}
-                        results.append(outcome); print('BLOCKED ',scenario); continue
-                    shim=path/'shim'; shim.mkdir(exist_ok=True); fake=shim/'g++'
-                    if scenario=='compile_timeout':
-                        fake.write_text('#!/bin/sh\nexec sleep 32\n'); timeout=37
-                    else:
-                        fake.write_text("#!/bin/sh\npython3 -c 'import sys;sys.stderr.write(\"E\"*500000);sys.stderr.flush()'\nexec sleep 36\n"); timeout=8
-                    fake.chmod(0o755); env['PATH']=str(shim)+os.pathsep+env.get('PATH','')
+                    shim=path/'shim'; shim.mkdir(exist_ok=True)
+                    gxx=shutil.which('g++')
+                    if not gxx:
+                        outcome={'case':scenario,'component':comp,'status':'BLOCKED','detail':'g++ unavailable; compiler simulator cannot be built'}
+                        results.append(outcome); print(f'BLOCKED  {scenario}'); continue
+                    fake, error=build_fake_compiler(gxx, shim, scenario)
+                    if not fake:
+                        outcome={'case':scenario,'component':comp,'status':'BLOCKED','detail':error}
+                        results.append(outcome); print(f'BLOCKED  {scenario} {error[:70]}'); continue
+                    timeout=37 if scenario=='compile_timeout' else 8
+                    env['PATH']=str(shim)+os.pathsep+env.get('PATH','')
                 if scenario.startswith('cli_'):
                     cmd=['java','-cp',cp,'vn.edu.dlu.autograder.cli.AutoGraderCommand']
                     if scenario=='cli_help': cmd+=['--help']
