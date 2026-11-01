@@ -11,7 +11,7 @@
     </parent>
     
     <groupId>vn.edu.dlu</groupId>
-    <artifactId>autograder</artifactId>
+    <artifactId>autograder</artifactId>	
     <version>1.0.0</version>
     <name>AutoGrader CLI</name>
 
