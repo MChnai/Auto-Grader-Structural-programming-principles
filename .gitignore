@@ -40,4 +40,7 @@ workspace/
 experiments/results/
 experiments/runs/
 
-# Do NOT ignore *.zip or *.out: test_data contains legitimate test fixtures.
+# Local Maven/audit runs (P00.3)
+p00-2-results*/
+p00-3-results*/
+p00-3-*.log

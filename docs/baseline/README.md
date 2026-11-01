@@ -28,3 +28,9 @@ P00.2: kiểm tra build/test trên máy có Maven + compiler, ghi version và lo
 ## P00.2 — Functional baseline audit
 
 See [`P00.2-runbook.md`](P00.2-runbook.md) for command-line reproduction and [`P00.2-functional-audit.md`](P00.2-functional-audit.md) for the recorded results. This stage deliberately preserves source behavior, including known deficiencies. P00.3 adds long-lived regression tests; P02+ fixes the findings.
+
+## P00.3 — JUnit 5 regression tests
+
+See [`P00.3-regression-plan.md`](P00.3-regression-plan.md) and [`P00.3-known-defects.csv`](P00.3-known-defects.csv).
+P00.2 Windows rerun recorded 31 PASS, 14 FAIL, 2 OBSERVED, 0 BLOCKED (user-provided log).
+Known-defect tests are disabled, not passing. Run `mvn clean verify` in a JDK 21 + Maven + g++ environment before asserting P00.3 acceptance.

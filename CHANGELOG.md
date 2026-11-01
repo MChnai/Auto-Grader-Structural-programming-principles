@@ -24,3 +24,17 @@ Ghi nhận những thay đổi được thực hiện trong AutoGrader-X. Change
 - Snapshot source Java và test fixtures từ `AutoGraderv2.zip`.
 - Bỏ qua file build đã được sinh trước đó (không xem là source).
 - Các vấn đề kiến trúc và an toàn hiện tại được ghi nhận; chưa tuyên bố đã được sửa.
+
+
+## P00.3 — Regression tests (unreleased)
+
+### Added
+- JUnit 5 regression tests for eight existing components.
+- AC, WA, CE, RE and TLE regression scenarios.
+- Known-defect registry based on P00.2.
+- Cross-platform regression fixtures.
+
+### Unchanged
+- Production Java source and pom.xml remain unchanged.
+- Known defects have not been fixed.
+- No local merge into main or develop.

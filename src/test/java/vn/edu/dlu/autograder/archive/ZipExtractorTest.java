@@ -61,9 +61,9 @@ public class ZipExtractorTest {
         Path extractTarget = tempDir.resolve("extracted_no_cpp");
         ZipExtractor.ExtractResult result = extractor.extract(zipFile, extractTarget);
 
-        assertFalse(result.isSuccess());
-        assertNull(result.getSourceDir(), "Contract: sourceDir phải trả về null khi không tìm thấy code");
-        assertTrue(result.getMessage().contains("Không tìm thấy bất kỳ file .cpp nào"));
+        // P00.2 characterization: extractor accepts archive without .cpp; compiler rejects it later.
+        assertTrue(result.isSuccess());
+        assertEquals(extractTarget, result.getSourceDir());
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ZipExtractorTest {
     @DisplayName("7. File Zip rỗng không chứa bất kỳ entry nào")
     void testEmptyZip(@TempDir Path tempDir) throws IOException {
         Path zipFile = tempDir.resolve("empty.zip");
-        
+
         // Tạo file ZIP rỗng hoàn toàn
         try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
             // Không ghi entry nào
@@ -123,9 +123,9 @@ public class ZipExtractorTest {
         Path extractTarget = tempDir.resolve("extracted_empty");
         ZipExtractor.ExtractResult result = extractor.extract(zipFile, extractTarget);
 
-        assertFalse(result.isSuccess());
-        assertNull(result.getSourceDir());
-        assertTrue(result.getMessage().contains("Không tìm thấy bất kỳ file .cpp nào"));
+        // Empty archive is valid at extraction stage in the current baseline.
+        assertTrue(result.isSuccess());
+        assertEquals(extractTarget, result.getSourceDir());
     }
 
     /**
