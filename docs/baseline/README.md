@@ -24,3 +24,7 @@
 ## Việc tiếp theo
 
 P00.2: kiểm tra build/test trên máy có Maven + compiler, ghi version và log. P00.3: bổ sung regression fixture theo các lỗi AC/WA/CE/TLE/RE, kiểm tra deadlock và cleanup. P02: sửa đường thực thi không an toàn. Không gắn trạng thái hoàn tất cho các phần chưa được kiểm chứng.
+
+## P00.2 — Functional baseline audit
+
+See [`P00.2-runbook.md`](P00.2-runbook.md) for command-line reproduction and [`P00.2-functional-audit.md`](P00.2-functional-audit.md) for the recorded results. This stage deliberately preserves source behavior, including known deficiencies. P00.3 adds long-lived regression tests; P02+ fixes the findings.

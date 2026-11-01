@@ -1,0 +1,434 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-11-01T17:17:11.518551+00:00",
+  "environment": {
+    "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "runtime_jar": "/mnt/data/autograder_x_work/original-autograder-cli.jar",
+    "git_revision": "5657b02",
+    "java": "openjdk version \"21.0.12.1\" 2026-08-18",
+    "g++": "g++ (Debian 14.2.0-19) 14.2.0",
+    "maven": "NOT INSTALLED"
+  },
+  "summary": {
+    "PASS": 30,
+    "FAIL": 14,
+    "OBSERVED": 2,
+    "BLOCKED": 0
+  },
+  "results": [
+    {
+      "case": "zip_valid",
+      "component": "ZipExtractor",
+      "status": "PASS",
+      "detail": "DETAIL zip_valid OK\nAUDIT_PASS zip_valid",
+      "seconds": 0.111,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "zip_nested",
+      "component": "ZipExtractor",
+      "status": "PASS",
+      "detail": "DETAIL zip_nested OK\nAUDIT_PASS zip_nested",
+      "seconds": 0.095,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "zip_slip",
+      "component": "ZipExtractor",
+      "status": "PASS",
+      "detail": "DETAIL zip_slip OK\nAUDIT_PASS zip_slip",
+      "seconds": 0.089,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "zip_large",
+      "component": "ZipExtractor",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL zip_large AssertionError: oversized entry accepted without a size quota; extractedBytes=6291456",
+      "seconds": 0.158,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "zip_no_cpp",
+      "component": "ZipExtractor",
+      "status": "OBSERVED",
+      "detail": "DETAIL zip_no_cpp OK\nAUDIT_PASS zip_no_cpp",
+      "seconds": 0.092,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "compile_single",
+      "component": "CompilerEngine",
+      "status": "PASS",
+      "detail": "DETAIL success=true message=Biên dịch thành công!\nAUDIT_PASS compile_single",
+      "seconds": 0.307,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "compile_multi",
+      "component": "CompilerEngine",
+      "status": "PASS",
+      "detail": "DETAIL success=true message=Biên dịch thành công!\nAUDIT_PASS compile_multi",
+      "seconds": 0.346,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "compile_error",
+      "component": "CompilerEngine",
+      "status": "PASS",
+      "detail": "DETAIL success=false message=Lỗi biên dịch (Compile Error): /tmp/autograder_p002_t5x1egbo/fixtures/compile_error/src/main.cpp:1:5: error: cannot declare ‘::main’ to be a global variable     1 | int main( { syn\nAUDIT_PASS compile_error",
+      "seconds": 0.093,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "compile_missing",
+      "component": "CompilerEngine",
+      "status": "PASS",
+      "detail": "DETAIL Lỗi: Thư mục mã nguồn không tồn tại hoặc không phải thư mục!\nAUDIT_PASS compile_missing",
+      "seconds": 0.07,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "compile_stderr_flood",
+      "component": "CompilerEngine",
+      "status": "FAIL",
+      "detail": "Process-group watchdog exceeded 8s; possible deadlock/timeout bypass",
+      "seconds": 8.011,
+      "exit_code": null,
+      "watchdog": true
+    },
+    {
+      "case": "compile_timeout",
+      "component": "CompilerEngine",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL compile_timeout AssertionError: compiler timeout not reported: Biên dịch thành công!",
+      "seconds": 32.095,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "native_normal",
+      "component": "NativeProcessExecutor",
+      "status": "PASS",
+      "detail": "DETAIL exit=0 timeout=false stdoutLen=3 stderrLen=0 timeMs=3\nAUDIT_PASS native_normal",
+      "seconds": 0.339,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "native_timeout",
+      "component": "NativeProcessExecutor",
+      "status": "PASS",
+      "detail": "DETAIL exit=-1 timeout=true stdoutLen=0 stderrLen=74 timeMs=1001\nAUDIT_PASS native_timeout",
+      "seconds": 1.118,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "native_stdout_big",
+      "component": "NativeProcessExecutor",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL native_stdout_big AssertionError: unexpected timeout: Lỗi: Chương trình chạy quá thời gian cho phép (1s) - Có thể do lặp vô tận!",
+      "seconds": 1.332,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "native_stderr_big",
+      "component": "NativeProcessExecutor",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL native_stderr_big AssertionError: unexpected timeout: Lỗi: Chương trình chạy quá thời gian cho phép (1s) - Có thể do lặp vô tận!",
+      "seconds": 1.344,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "native_input_big",
+      "component": "NativeProcessExecutor",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL native_input_big AssertionError: exit=-1 stderr=Lỗi hệ thống: Stream closed",
+      "seconds": 0.358,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "native_empty_input_eof",
+      "component": "NativeProcessExecutor",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL native_empty_input_eof AssertionError: unexpected timeout: Lỗi: Chương trình chạy quá thời gian cho phép (1s) - Có thể do lặp vô tận!",
+      "seconds": 1.363,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "analyzer_simple",
+      "component": "CppCodeAnalyzer",
+      "status": "PASS",
+      "detail": "DETAIL valid=true loops=1 functions=2 warnings=1 violations=0\nAUDIT_PASS analyzer_simple",
+      "seconds": 0.113,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "analyzer_comments",
+      "component": "CppCodeAnalyzer",
+      "status": "PASS",
+      "detail": "DETAIL valid=true loops=0 functions=1 warnings=1 violations=0\nAUDIT_PASS analyzer_comments",
+      "seconds": 0.109,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "analyzer_strings",
+      "component": "CppCodeAnalyzer",
+      "status": "PASS",
+      "detail": "DETAIL valid=true loops=0 functions=1 warnings=1 violations=0\nAUDIT_PASS analyzer_strings",
+      "seconds": 0.118,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "analyzer_multifile",
+      "component": "CppCodeAnalyzer",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL analyzer_multifile AssertionError: main-only analysis functions=1 loops=0",
+      "seconds": 0.126,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "analyzer_complex_declarators",
+      "component": "CppCodeAnalyzer",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL analyzer_complex_declarators AssertionError: trailing return type not counted, functions=1",
+      "seconds": 0.11,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "grade_correct",
+      "component": "SubmissionGrader",
+      "status": "PASS",
+      "detail": "DETAIL compiled=true score=10.0 passed=1 tests=1 statuses=[ACCEPTED] summary=Correctness: 6.00p (1/1) | Clean Code: 1.50p (100%) | Perf: 1.50p | MemSafety: 1.00p | Tổng: 10.00/10.00\nAUDIT_PASS grade_correct",
+      "seconds": 0.473,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "grade_wrong",
+      "component": "SubmissionGrader",
+      "status": "PASS",
+      "detail": "DETAIL compiled=true score=1.5 passed=0 tests=1 statuses=[WRONG_ANSWER] summary=Correctness: 0.00p (0/1) | Clean Code: 1.50p (100%) | Perf: 0.00p | MemSafety: 0.00p | Tổng: 1.50/10.00\nAUDIT_PASS grade_wrong",
+      "seconds": 0.471,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "grade_compilation",
+      "component": "SubmissionGrader",
+      "status": "PASS",
+      "detail": "DETAIL compiled=false score=0.0 passed=0 tests=0 statuses=[] summary=Compile Error (Lỗi biên dịch)\nAUDIT_PASS grade_compilation",
+      "seconds": 0.185,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "grade_runtime",
+      "component": "SubmissionGrader",
+      "status": "PASS",
+      "detail": "DETAIL compiled=true score=1.5 passed=0 tests=1 statuses=[RUNTIME_ERROR] summary=Correctness: 0.00p (0/1) | Clean Code: 1.50p (100%) | Perf: 0.00p | MemSafety: 0.00p | Tổng: 1.50/10.00\nAUDIT_PASS grade_runtime",
+      "seconds": 0.201,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "grade_tle",
+      "component": "SubmissionGrader",
+      "status": "PASS",
+      "detail": "DETAIL compiled=true score=1.5 passed=0 tests=1 statuses=[TIME_LIMIT_EXCEEDED] summary=Correctness: 0.00p (0/1) | Clean Code: 1.50p (100%) | Perf: 0.00p | MemSafety: 0.00p | Tổng: 1.50/10.00\nAUDIT_PASS grade_tle",
+      "seconds": 2.231,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "grade_rubric",
+      "component": "SubmissionGrader",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL grade_rubric AssertionError: 100% correctness rubric ignored on failing test: score=1.5",
+      "seconds": 0.457,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "output_exact",
+      "component": "OutputChecker",
+      "status": "PASS",
+      "detail": "DETAIL matched expectation\nAUDIT_PASS output_exact",
+      "seconds": 0.083,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "output_exact_spaces",
+      "component": "OutputChecker",
+      "status": "PASS",
+      "detail": "DETAIL matched expectation\nAUDIT_PASS output_exact_spaces",
+      "seconds": 0.067,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "output_trim",
+      "component": "OutputChecker",
+      "status": "PASS",
+      "detail": "DETAIL matched expectation\nAUDIT_PASS output_trim",
+      "seconds": 0.07,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "output_internal_spaces",
+      "component": "OutputChecker",
+      "status": "PASS",
+      "detail": "DETAIL matched expectation\nAUDIT_PASS output_internal_spaces",
+      "seconds": 0.075,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "output_float",
+      "component": "OutputChecker",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL output_float AssertionError: checker behavior does not meet expectation for output_float",
+      "seconds": 0.084,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "output_wrong",
+      "component": "OutputChecker",
+      "status": "PASS",
+      "detail": "DETAIL matched expectation\nAUDIT_PASS output_wrong",
+      "seconds": 0.075,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "output_cr_only",
+      "component": "OutputChecker",
+      "status": "FAIL",
+      "detail": "AUDIT_FAIL output_cr_only AssertionError: checker behavior does not meet expectation for output_cr_only",
+      "seconds": 0.076,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "similarity_identical",
+      "component": "WinnowingEngine",
+      "status": "PASS",
+      "detail": "DETAIL similarity=100.00%\nAUDIT_PASS similarity_identical",
+      "seconds": 0.1,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "similarity_renamed",
+      "component": "WinnowingEngine",
+      "status": "PASS",
+      "detail": "DETAIL similarity=100.00%\nAUDIT_PASS similarity_renamed",
+      "seconds": 0.086,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "similarity_reordered",
+      "component": "WinnowingEngine",
+      "status": "OBSERVED",
+      "detail": "DETAIL similarity=52.17%\nAUDIT_PASS similarity_reordered",
+      "seconds": 0.078,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "similarity_unrelated",
+      "component": "WinnowingEngine",
+      "status": "PASS",
+      "detail": "DETAIL similarity=10.71%\nAUDIT_PASS similarity_unrelated",
+      "seconds": 0.091,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "similarity_empty",
+      "component": "WinnowingEngine",
+      "status": "PASS",
+      "detail": "DETAIL similarity=0.00%\nAUDIT_PASS similarity_empty",
+      "seconds": 0.078,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "cli_help",
+      "component": "AutoGraderCommand",
+      "status": "PASS",
+      "detail": "exit=0; stdout=Usage: autograder [-hV] [COMMAND]\nHệ thống chấm điểm bài nộp & kiểm tra đạo văn tự động - Trường Đại Học Đà Lạt\n  -h, --help      Show this help message and exit.\n  -V, --version   Print ver; stderr=",
+      "seconds": 0.194,
+      "exit_code": 0,
+      "watchdog": false
+    },
+    {
+      "case": "cli_grade_help",
+      "component": "AutoGraderCommand",
+      "status": "FAIL",
+      "detail": "exit=2; stdout=; stderr=Missing required parameter: '<submissionZipPath>'\nUsage: autograder grade [--use-docker] [-s=<maxScore>] -t=<testCasesDir>\n                        <submissionZipPath>\nBiên dịch và chấm điểm ",
+      "seconds": 0.238,
+      "exit_code": 2,
+      "watchdog": false
+    },
+    {
+      "case": "cli_invalid_option",
+      "component": "AutoGraderCommand",
+      "status": "PASS",
+      "detail": "exit=2; stdout=; stderr=Unknown option: '--definitely-invalid'\nUsage: autograder [-hV] [COMMAND]\nHệ thống chấm điểm bài nộp & kiểm tra đạo văn tự động - Trường Đại Học Đà Lạt\n  -h, --help      Show this help messag",
+      "seconds": 0.248,
+      "exit_code": 2,
+      "watchdog": false
+    },
+    {
+      "case": "cli_missing_required",
+      "component": "AutoGraderCommand",
+      "status": "PASS",
+      "detail": "exit=2; stdout=; stderr=Missing required parameter: '<submissionZipPath>'\nUsage: autograder grade [--use-docker] [-s=<maxScore>] -t=<testCasesDir>\n                        <submissionZipPath>\nBiên dịch và chấm điểm ",
+      "seconds": 0.225,
+      "exit_code": 2,
+      "watchdog": false
+    },
+    {
+      "case": "cli_missing_submission",
+      "component": "AutoGraderCommand",
+      "status": "PASS",
+      "detail": "exit=1; stdout==========================================\n        DLU AUTOGRADER ENGINE v1.0       \n=========================================\n; stderr=[LỖI] File bài nộp không tồn tại: /tmp/autograder_p002_t5x1egbo/fixtures/cli_missing_submission/missing.zip\n",
+      "seconds": 0.211,
+      "exit_code": 1,
+      "watchdog": false
+    },
+    {
+      "case": "cli_report_option",
+      "component": "AutoGraderCommand",
+      "status": "FAIL",
+      "detail": "exit=2; stdout=; stderr=Unknown options: '--output', '/tmp/autograder_p002_t5x1egbo/fixtures/cli_report_option/grade.json'\nUsage: autograder grade [--use-docker] [-s=<maxScore>] -t=<testCasesDir>\n                  ",
+      "seconds": 0.236,
+      "exit_code": 2,
+      "watchdog": false
+    }
+  ]
+}
