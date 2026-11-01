@@ -28,7 +28,7 @@ public class CompilerEngineTest {
     void testSuccessExecution(@TempDir Path tempDir) throws IOException {
         Path sourceDir = tempDir.resolve("src_success");
         Files.createDirectories(sourceDir);
-        
+
         // Code C++ tính tổng 2 số
         String code = "#include <iostream>\n" +
                       "using namespace std;\n" +
@@ -50,7 +50,7 @@ public class CompilerEngineTest {
 
         assertFalse(execResult.isTimedOut(), "Không được bị Timeout");
         assertEquals(0, execResult.getExitCode(), "Exit code phải bằng 0");
-        assertEquals("30\n", execResult.getStdout());
+        assertEquals("30", execResult.getStdout().strip(), "Accept LF and CRLF on different platforms");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class CompilerEngineTest {
     void testCompileError(@TempDir Path tempDir) throws IOException {
         Path sourceDir = tempDir.resolve("src_ce");
         Files.createDirectories(sourceDir);
-        
+
         // Code C++ thiếu dấu chấm phẩy
         String badCode = "#include <iostream>\n" +
                          "int main() {\n" +
@@ -79,7 +79,7 @@ public class CompilerEngineTest {
     void testTimeLimitExceeded(@TempDir Path tempDir) throws IOException {
         Path sourceDir = tempDir.resolve("src_tle");
         Files.createDirectories(sourceDir);
-        
+
         // Code C++ lặp vô tận
         String code = "int main() { while(true); return 0; }";
         Files.writeString(sourceDir.resolve("main.cpp"), code);
@@ -100,15 +100,9 @@ public class CompilerEngineTest {
     void testRuntimeError(@TempDir Path tempDir) throws IOException {
         Path sourceDir = tempDir.resolve("src_rte");
         Files.createDirectories(sourceDir);
-        
-        // Code C++ gây lỗi chia cho 0
-        String code = "#include <iostream>\n" +
-                      "int main() {\n" +
-                      "    int x = 0;\n" +
-                      "    int y = 10 / x;\n" +
-                      "    std::cout << y;\n" +
-                      "    return 0;\n" +
-                      "}";
+
+        // Deterministic non-zero exit rather than relying on undefined division by zero.
+        String code = "int main() { return 7; }";
         Files.writeString(sourceDir.resolve("main.cpp"), code);
 
         CompilerEngine.CompileResult compileResult = compiler.compile(sourceDir, tempDir);

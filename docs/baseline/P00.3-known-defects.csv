@@ -1,0 +1,15 @@
+case,component,priority,planned_phase,baseline_result,unit_regression
+zip_large,ZipExtractor,P1,P02,FAIL,DISABLED
+compile_stderr_flood,CompilerEngine,P0,P02,FAIL,P00.2 isolated watchdog
+compile_timeout,CompilerEngine,P0,P02,FAIL,P00.2 isolated watchdog
+native_stdout_big,NativeProcessExecutor,P0,P02,FAIL,DISABLED
+native_stderr_big,NativeProcessExecutor,P0,P02,FAIL,DISABLED
+native_input_early_exit,NativeProcessExecutor,P0,P02,FAIL,P00.2 isolated watchdog
+native_empty_input_eof,NativeProcessExecutor,P0,P02,FAIL,DISABLED
+analyzer_multifile,CppCodeAnalyzer,P1,P04,FAIL,P00.2 audit
+analyzer_complex_declarators,CppCodeAnalyzer,P1,P04,FAIL,DISABLED
+grade_rubric,SubmissionGrader,P1,P09,FAIL,P00.2 audit
+output_float,OutputChecker,P2,P03/P10,FAIL,DISABLED
+output_cr_only,OutputChecker,P2,P03/P10,FAIL,DISABLED
+cli_grade_help,AutoGraderCommand,P2,P10,FAIL,P00.2 audit
+cli_report_option,AutoGraderCommand,P2,P10,FAIL,P00.2 audit
